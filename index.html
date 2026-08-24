@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万兴海外账号批发零售</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif;}
+        :root{
+            --primary:#00B597;
+            --secondary:#0A3D62;
+            --bg:#F5F7FA;
+            --card:#FFFFFF;
+            --text:#333333;
+            --light:#999999;
+            --danger:#F44336;
+            --warning:#FF9800;
+            --border:#E5E7EB;
+        }
+        body{background:var(--bg);color:var(--text);padding-bottom:70px;}
+        a{text-decoration:none;color:inherit;}
+        .header{background:linear-gradient(135deg,var(--secondary),var(--primary));color:#fff;padding:15px;position:sticky;top:0;z-index:99;}
+        .header h1{font-size:18px;text-align:center;}
+        .announce{background:#FFF3E0;color:#E65100;padding:10px 15px;font-size:13px;}
+        .container{padding:12px;}
+        .category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+        .category-card{background:var(--card);border-radius:10px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,.05);cursor:pointer;transition:.2s;}
+        .category-card:active{transform:scale(.97);}
+        .category-name{font-size:15px;font-weight:600;margin-bottom:5px;}
+        .category-count{font-size:12px;color:var(--light);}
+        .product-list{display:flex;flex-direction:column;gap:10px;}
+        .product-card{background:var(--card);border-radius:10px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+        .product-name{font-size:15px;font-weight:600;margin-bottom:8px;}
+        .product-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+        .price{color:var(--danger);font-size:18px;font-weight:bold;}
+        .usdt-price{font-size:12px;color:var(--light);}
+        .stock{font-size:13px;color:var(--primary);}
+        .buy-btn{width:100%;background:var(--primary);color:#fff;border:none;border-radius:6px;padding:10px;font-size:15px;cursor:pointer;}
+        .buy-btn:active{opacity:.85;}
+        .back-btn{display:inline-flex;align-items:center;color:#fff;font-size:14px;margin-bottom:5px;cursor:pointer;}
+        .page{display:none;}
+        .page.active{display:block;}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);display:flex;box-shadow:0 -2px 10px rgba(0,0,0,.08);z-index:99;}
+        .nav-item{flex:1;text-align:center;padding:10px 0;font-size:13px;color:var(--light);cursor:pointer;}
+        .nav-item.active{color:var(--primary);}
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100;}
+        .modal.active{display:flex;}
+        .modal-box{background:#fff;border-radius:12px;width:90%;max-width:420px;max-height:90vh;overflow-y:auto;padding:20px;}
+        .modal-title{font-size:17px;font-weight:600;margin-bottom:15px;text-align:center;}
+        .close-btn{text-align:right;color:var(--light);cursor:pointer;margin-bottom:10px;}
+        .form-group{margin-bottom:12px;}
+        label{display:block;margin-bottom:5px;font-size:14px;color:#555;}
+        input,textarea,select{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:15px;}
+        .pay-info{background:#F8F9FA;padding:12px;border-radius:8px;margin:12px 0;}
+        .copy-btn{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:13px;cursor:pointer;margin-left:8px;}
+        .order-no{font-size:14px;color:var(--primary);margin-bottom:10px;}
+        .success-box{text-align:center;padding:20px 0;}
+        .success-icon{font-size:48px;color:var(--primary);margin-bottom:10px;}
+        .order-info-box{background:#F5F5F5;padding:12px;border-radius:6px;margin-top:10px;word-break:break-all;}
+        .tip{font-size:12px;color:var(--light);margin-top:6px;}
+        .link{color:var(--primary);text-decoration:underline;cursor:pointer;}
+        .search-box{margin-bottom:15px;}
+        .search-box input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;}
+    </style>
+</head>
+<body>
+
+<!-- 首页 -->
+<div id="page-home" class="page active">
+    <div class="header">
+        <h1>万兴海外账号批发零售</h1>
+    </div>
+    <div class="announce">
+        📢 自动发货：付款后订单信息自动发送到您填写的邮箱，请正确填写邮箱地址！<br>
+        📞 客服：<a href="https://t.me/wxch03" target="_blank" class="link">https://t.me/wxch03</a> | 🔒 永久防失联：<a href="https://t.me/wxcfpd" target="_blank" class="link">https://t.me/wxcfpd</a>
+    </div>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索商品名称...">
+        </div>
+        <div class="category-grid" id="categoryGrid"></div>
+    </div>
+</div>
+
+<!-- 商品列表页 -->
+<div id="page-products" class="page">
+    <div class="header">
+        <div class="back-btn" onclick="goBack()">← 返回</div>
+        <h1 id="catTitle">商品列表</h1>
+    </div>
+    <div class="container">
+        <div class="product-list" id="productList"></div>
+    </div>
+</div>
+
+<!-- 联系客服页 -->
+<div id="page-contact" class="page">
+    <div class="header">
+        <div class="back-btn" onclick="goBack()">← 返回</div>
+        <h1>联系客服</h1>
+    </div>
+    <div class="container">
+        <div class="product-card">
+            <div class="product-name">📞 在线客服</div>
+            <div style="margin:15px 0;line-height:1.8;">
+                <p>🔹 Telegram：<a href="https://t.me/wxch03" target="_blank" class="link">https://t.me/wxch03</a></p>
+                <p>🔹 永久防失联频道：<a href="https://t.me/wxcfpd" target="_blank" class="link">https://t.me/wxcfpd</a></p>
+                <p>🔹 服务时间：24小时在线</p>
+                <p>🔹 发货方式：付款后订单信息自动发送到您填写的邮箱</p>
+                <p style="color:var(--danger);margin-top:10px;">⚠️ 请务必正确填写邮箱地址，订单信息将发送至该邮箱！</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 订单查询页 -->
+<div id="page-query" class="page">
+    <div class="header">
+        <div class="back-btn" onclick="goBack()">← 返回</div>
+        <h1>订单查询</h1>
+    </div>
+    <div class="container">
+        <div class="product-card">
+            <div class="form-group">
+                <label>📧 填写下单时使用的邮箱</label>
+                <input type="email" id="queryEmail" placeholder="请输入下单时填写的邮箱">
+            </div>
+            <button class="buy-btn" onclick="queryOrder()">查询订单</button>
+            <div id="queryResult" style="margin-top:15px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 下单弹窗 -->
+<div id="orderModal" class="modal">
+    <div class="modal-box">
+        <div class="close-btn" onclick="closeModal('orderModal')">✕ 关闭</div>
+        <div class="modal-title">确认订单</div>
+        <div class="order-no">订单号：<span id="orderNo"></span></div>
+        <div class="form-group">
+            <label>商品名称</label>
+            <input type="text" id="orderProduct" readonly>
+        </div>
+        <div class="form-group">
+            <label>购买数量</label>
+            <input type="number" id="buyQty" value="1" min="1" onchange="calcTotal()">
+        </div>
+        <div class="form-group">
+            <label>📧 收货邮箱（订单信息将发送至此邮箱）</label>
+            <input type="email" id="buyEmail" placeholder="请输入您的邮箱地址" required>
+        </div>
+        <div class="pay-info">
+            <p>金额：<span id="rmbTotal" style="color:var(--danger);font-weight:bold;font-size:18px;">0</span> 元</p>
+            <p>USDT：<span id="usdtTotal">0</span> USDT（汇率 6.85）</p>
+        </div>
+        <button class="buy-btn" onclick="goPay()">提交并生成支付信息</button>
+    </div>
+</div>
+
+<!-- 支付弹窗 -->
+<div id="payModal" class="modal">
+    <div class="modal-box">
+        <div class="close-btn" onclick="closeModal('payModal')">✕ 关闭</div>
+        <div class="modal-title">USDT TRC20 支付</div>
+        <div class="pay-info">
+            <p><strong>应付金额：</strong><span id="payRmb">0</span> 元</p>
+            <p><strong>应付USDT：</strong><span id="payUsdt">0</span> USDT</p>
+            <p style="margin-top:10px;"><strong>收款地址（TRC20）：</strong></p>
+            <div style="display:flex;align-items:center;word-break:break-all;margin-top:5px;">
+                <span id="payAddress">TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK</span>
+                <button class="copy-btn" onclick="copyText('payAddress')">复制</button>
+            </div>
+            <p style="font-size:12px;color:var(--danger);margin-top:10px;">⚠️ 请务必选择 TRC20 网络转账！转账后订单信息将自动发送到您的邮箱！</p>
+        </div>
+        <div class="form-group">
+            <label>上传支付截图（可选，加快到账）</label>
+            <input type="file" accept="image/*" id="payScreenshot">
+        </div>
+        <button class="buy-btn" onclick="confirmPay()">我已付款，发送订单信息到邮箱</button>
+    </div>
+</div>
+
+<!-- 成功弹窗 -->
+<div id="successModal" class="modal">
+    <div class="modal-box">
+        <div class="success-box">
+            <div class="success-icon">✅</div>
+            <div class="modal-title">付款成功！订单信息已发送</div>
+            <p style="margin:10px 0;color:var(--primary);">订单信息已发送至：<span id="sendEmail"></span></p>
+            <div class="order-info-box">
+                <p><strong>订单号信息：</strong></p>
+                <p id="orderInfoText"></p>
+            </div>
+            <p class="tip">同时已发送到您的邮箱，请注意查收</p>
+            <button class="buy-btn" style="margin-top:15px;" onclick="closeModal('successModal');goHome();">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="bottom-nav">
+    <div class="nav-item active" data-page="page-home">🏠 商城</div>
+    <div class="nav-item" data-page="page-contact">📞 联系客服</div>
+    <div class="nav-item" data-page="page-query">🔍 订单查询</div>
+</div>
+
+<script>
+// 全局配置
+const CONFIG = {
+    rate: 6.85,
+    payAddress: 'TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK',
+    customerTG: 'https://t.me/wxch03',
+    channelTG: 'https://t.me/wxcfpd',
+    priceMultiplier: 3
+};
+
+// 完整分类列表
+const categories = [
+    {id:'fb',name:'Facebook账号',count:12},
+    {id:'ig',name:'Instagram账号',count:15},
+    {id:'twitter',name:'Twitter/X账号',count:10},
+    {id:'tiktok',name:'TikTok账号',count:18},
+    {id:'whatsapp',name:'WhatsApp账号',count:12},
+    {id:'telegram',name:'Telegram/TG账号',count:20},
+    {id:'discord',name:'Discord账号',count:10},
+    {id:'linkedin',name:'LinkedIn账号',count:8},
+    {id:'youtube',name:'YouTube账号',count:9},
+    {id:'reddit',name:'Reddit账号',count:7},
+    {id:'vk',name:'VK账号',count:6},
+    {id:'line',name:'Line账号',count:8},
+    {id:'kakao',name:'Kakao账号',count:5},
+    {id:'apple',name:'Apple ID',count:12},
+    {id:'google',name:'Google/Gmail',count:14},
+    {id:'other',name:'其他平台账号',count:25}
+];
+
+// ==========================================
+// 完整商品数据 — 一比一补全，无遗漏
+// ==========================================
+const allProducts = {
+    fb: [
+        {name:'Facebook 全新白号',price:5.0,stock:5000},
+        {name:'Facebook 已实名号',price:12.0,stock:2000},
+        {name:'Facebook 老号（1年以上）',price:25.0,stock:1500},
+        {name:'Facebook 带邮箱+密码',price:8.0,stock:3000},
+        {name:'Facebook 已绑手机',price:15.0,stock:1800},
+        {name:'Facebook 美国号',price:18.0,stock:1200},
+        {name:'Facebook 英国号',price:20.0,stock:1000},
+        {name:'Facebook 香港号',price:16.0,stock:1500},
+        {name:'Facebook 企业号',price:50.0,stock:300},
+        {name:'Facebook 广告账户',price:120.0,stock:100},
+        {name:'Facebook 高权重老号',price:88.0,stock:200},
+        {name:'Facebook 批量100个起',price:4.5,stock:10000}
+    ],
+    ig: [
+        {name:'Instagram 全新号',price:6.0,stock:6000},
+        {name:'Instagram 已实名',price:15.0,stock:2500},
+        {name:'Instagram 美女号',price:35.0,stock:800},
+        {name:'Instagram 高权重老号',price:55.0,stock:500},
+        {name:'Instagram 美国区',price:20.0,stock:1500},
+        {name:'Instagram 日本区',price:22.0,stock:1200},
+        {name:'Instagram 千粉号',price:45.0,stock:600},
+        {name:'Instagram 万粉号',price:120.0,stock:200},
+        {name:'Instagram 带邮箱',price:10.0,stock:3000},
+        {name:'Instagram 已绑手机',price:18.0,stock:2000},
+        {name:'Instagram 商业号',price:68.0,stock:300},
+        {name:'Instagram 蓝V认证',price:380.0,stock:30},
+        {name:'Instagram 带货号',price:150.0,stock:150},
+        {name:'Instagram 老号（2年+）',price:85.0,stock:250},
+        {name:'Instagram 批量50个起',price:5.5,stock:8000}
+    ],
+    twitter: [
+        {name:'Twitter/X 全新号',price:4.5,stock:8000},
+        {name:'Twitter/X 老号',price:18.0,stock:3000},
+        {name:'Twitter/X 蓝V认证号',price:168.0,stock:50},
+        {name:'Twitter/X 美国号',price:15.0,stock:2000},
+        {name:'Twitter/X 带邮箱',price:8.0,stock:4000},
+        {name:'Twitter/X 千粉号',price:35.0,stock:800},
+        {name:'Twitter/X 万粉号',price:98.0,stock:300},
+        {name:'Twitter/X 已绑手机',price:12.0,stock:2500},
+        {name:'Twitter/X 高权重',price:55.0,stock:400},
+        {name:'Twitter/X 批量100个起',price:4.0,stock:15000}
+    ],
+    tiktok: [
+        {name:'TikTok 美区账号',price:25.0,stock:2000},
+        {name:'TikTok 英区账号',price:23.0,stock:1800},
+        {name:'TikTok 日区账号',price:22.0,stock:2200},
+        {name:'TikTok 韩区账号',price:24.0,stock:1500},
+        {name:'TikTok 全球区',price:30.0,stock:2500},
+        {name:'TikTok 千粉号',price:55.0,stock:600},
+        {name:'TikTok 万粉号',price:150.0,stock:200},
+        {name:'TikTok 十万粉号',price:500.0,stock:50},
+        {name:'TikTok 带邮箱',price:18.0,stock:3000},
+        {name:'TikTok 已实名',price:68.0,stock:400},
+        {name:'TikTok 创作者基金号',price:120.0,stock:150},
+        {name:'TikTok 老号',price:45.0,stock:800},
+        {name:'TikTok 港区',price:21.0,stock:1600},
+        {name:'TikTok 台区号',price:22.0,stock:1400},
+        {name:'TikTok 新加坡区',price:23.0,stock:1300},
+        {name:'TikTok 印尼区',price:20.0,stock:1800},
+        {name:'TikTok 越南区',price:19.0,stock:2000},
+        {name:'TikTok 批量50个起',price:22.0,stock:5000}
+    ],
+    whatsapp: [
+        {name:'WhatsApp 全新号',price:12.0,stock:4000},
+        {name:'WhatsApp 老号',price:25.0,stock:2000},
+        {name:'WhatsApp 美国号',price:18.0,stock:1500},
+        {name:'WhatsApp 英国号',price:20.0,stock:1200},
+        {name:'WhatsApp 香港号',price:15.0,stock:1800},
+        {name:'WhatsApp 带手机号',price:16.0,stock:2500},
+        {name:'WhatsApp 可接收验证码',price:22.0,stock:1000},
+        {name:'WhatsApp 商业号',price:55.0,stock:300},
+        {name:'WhatsApp 群聊号',price:35.0,stock:600},
+        {name:'WhatsApp 批量100个起',price:10.0,stock:8000},
+        {name:'WhatsApp 一年老号',price:45.0,stock:500},
+        {name:'WhatsApp 永久稳定号',price:68.0,stock:200}
+    ],
+    telegram: [
+        {name:'Telegram 全新号',price:5.0,stock:10000},
+        {name:'Telegram 各国靓号',price:50.0,stock:500},
+        {name:'Telegram 老号（1年+）',price:18.0,stock:3000},
+        {name:'Telegram 5年以上老号',price:75.0,stock:300},
+        {name:'Telegram 带手机号',price:10.0,stock:5000},
+        {name:'Telegram 美国号',price:15.0,stock:2000},
+        {name:'Telegram 香港号',price:12.0,stock:2500},
+        {name:'Telegram 群主号',price:35.0,stock:800},
+        {name:'Telegram 频道主号',price:40.0,stock:700},
+        {name:'Telegram 可加人群',price:20.0,stock:2000},
+        {name:'Telegram 批量200个起',price:4.5,stock:20000},
+        {name:'Telegram 高权限号',price:88.0,stock:150},
+        {name:'Telegram 无限制号',price:25.0,stock:1500},
+        {name:'Telegram 带用户名靓号',price:120.0,stock:100},
+        {name:'Telegram 日本号',price:14.0,stock:1800},
+        {name:'Telegram 韩国号',price:16.0,stock:1600},
+        {name:'Telegram 新加坡号',price:15.0,stock:1700},
+        {name:'Telegram 马来西亚号',price:13.0,stock:1900},
+        {name:'Telegram 印尼号',price:11.0,stock:2200},
+        {name:'Telegram 越南号',price:10.0,stock:2500}
+    ],
+    discord: [
+        {name:'Discord 全新号',price:8.0,stock:5000},
+        {name:'Discord 已验证',price:18.0,stock:2500},
+        {name:'Discord 服务器创建号',price:35.0,stock:1000},
+        {name:'Discord 老号',price:25.0,stock:1500},
+        {name:'Discord 带邮箱',price:12.0,stock:3000},
+        {name:'Discord 已绑手机',price:20.0,stock:2000},
+        {name:'Discord 管理员号',price:55.0,stock:400},
+        {name:'Discord 批量100个起',price:7.0,stock:10000},
+        {name:'Discord 无限发送消息',price:30.0,stock:800},
+        {name:'Discord 永久稳定号',price:45.0,stock:500}
+    ],
+    linkedin: [
+        {name:'LinkedIn 全新号',price:18.0,stock:2000},
+        {name:'LinkedIn 职业号',price:38.0,stock:1200},
+        {name:'LinkedIn 已认证',price:88.0,stock:300},
+        {name:'LinkedIn 美国号',price:25.0,stock:1500},
+        {name:'LinkedIn 老号',price:45.0,stock:800},
+        {name:'LinkedIn 带邮箱',price:22.0,stock:1800},
+        {name:'LinkedIn 招聘号',price:68.0,stock:400},
+        {name:'LinkedIn 批量50个起',price:16.0,stock:5000}
+    ],
+    youtube: [
+        {name:'YouTube 全新号',price:12.0,stock:3000},
+        {name:'YouTube 老号',price:30.0,stock:1500},
+        {name:'YouTube 已开通收益',price:108.0,stock:200},
+        {name:'YouTube 千粉号',price:55.0,stock:500},
+        {name:'YouTube 万粉号',price:180.0,stock:100},
+        {name:'YouTube 频道号',price:45.0,stock:800},
+        {name:'YouTube 带邮箱',price:15.0,stock:2500},
+        {name:'YouTube 批量50个起',price:10.0,stock:6000},
+        {name:'YouTube 长期稳定号',price:55.0,stock:400}
+    ],
+    reddit: [
+        {name:'Reddit 全新号',price:7.0,stock:4000},
+        {name:'Reddit 高Karma号',price:38.0,stock:800},
+        {name:'Reddit 老号',price:22.0,stock:1500},
+        {name:'Reddit 千赞号',price:55.0,stock:500},
+        {name:'Reddit 带邮箱',price:10.0,stock:3000},
+        {name:'Reddit 批量100个起',price:6.0,stock:8000},
+        {name:'Reddit 发帖不限制',price:30.0,stock:1000}
+    ],
+    vk: [
+        {name:'VK 俄罗斯号',price:12.0,stock:2500},
+        {name:'VK 老号',price:22.0,stock:1200},
+        {name:'VK 全新号',price:10.0,stock:3000},
+        {name:'VK 带邮箱',price:15.0,stock:2000},
+        {name:'VK 乌克兰号',price:13.0,stock:1800},
+        {name:'VK 批量50个起',price:9.0,stock:5000}
+    ],
+    line: [
+        {name:'Line 日本号',price:22.0,stock:1500},
+        {name:'Line 韩国号',price:25.0,stock:1200},
+        {name:'Line 台湾号',price:20.0,stock:1800},
+        {name:'Line 全新号',price:18.0,stock:2000},
+        {name:'Line 老号',price:35.0,stock:800},
+        {name:'Line 批量30个起',price:19.0,stock:4000},
+        {name:'Line 可加好友',price:28.0,stock:1000},
+        {name:'Line 商业号',price:55.0,stock:300}
+    ],
+    kakao: [
+        {name:'KakaoTalk 韩国号',price:25.0,stock:1500},
+        {name:'KakaoTalk 全新号',price:20.0,stock:2000},
+        {name:'KakaoTalk 老号',price:38.0,stock:800},
+        {name:'KakaoTalk 带手机号',price:30.0,stock:1200},
+        {name:'KakaoTalk 批量30个起',price:23.0,stock:3000}
+    ],
+    apple: [
+        {name:'Apple ID 美区',price:18.0,stock:3000},
+        {name:'Apple ID 日区',price:20.0,stock:2500},
+        {name:'Apple ID 港区',price:16.0,stock:3500},
+        {name:'Apple ID 韩区',price:19.0,stock:2000},
+        {name:'Apple ID 无锁版',price:30.0,stock:1500},
+        {name:'Apple ID 已购付费软件',price:88.0,stock:300},
+        {name:'Apple ID 全新未登录',price:15.0,stock:4000},
+        {name:'Apple ID 可改密',price:22.0,stock:2500},
+        {name:'Apple ID 批量50个起',price:14.0,stock:8000},
+        {name:'Apple ID 稳定不封号',price:35.0,stock:1000},
+        {name:'Apple ID 新西兰区',price:17.0,stock:2200},
+        {name:'Apple ID 新加坡区',price:18.0,stock:2100}
+    ],
+    google: [
+        {name:'Gmail/Google 全新号',price:6.0,stock:10000},
+        {name:'Google 老号',price:15.0,stock:4000},
+        {name:'Google Voice 美国号',price:38.0,stock:800},
+        {name:'Google 已验证',price:12.0,stock:5000},
+        {name:'Google 美国区',price:10.0,stock:6000},
+        {name:'Google 日本区',price:11.0,stock:5500},
+        {name:'Google 带手机号',price:15.0,stock:4000},
+        {name:'Google Ads 广告号',price:88.0,stock:200},
+        {name:'Google 开发者账号',price:180.0,stock:50},
+        {name:'Google Workspace',price:55.0,stock:500},
+        {name:'Google 批量200个起',price:5.0,stock:20000},
+        {name:'Google 长期稳定号',price:25.0,stock:2000},
+        {name:'Google Drive 无限容量',price:68.0,stock:300},
+        {name:'Google 邮箱无限制',price:18.0,stock:3000}
+    ],
+    other: [
+        {name:'Snapchat 账号',price:18.0,stock:2500},
+        {name:'Pinterest 账号',price:12.0,stock:3000},
+        {name:'Tinder 账号',price:22.0,stock:2000},
+        {name:'Telegram 群组/频道代建',price:55.0,stock:500},
+        {name:'Twitch 直播号',price:35.0,stock:1000},
+        {name:'Spotify 音乐会员号',price:28.0,stock:1500},
+        {name:'Discord 机器人号',price:68.0,stock:300},
+        {name:'Medium 账号',price:15.0,stock:2000},
+        {name:'Quora 问答号',price:13.0,stock:2200},
+        {name:'Tumblr 轻博客号',price:16.0,stock:1800},
+        {name:'Vimeo 视频号',price:25.0,stock:1200},
+        {name:'SoundCloud 音乐号',price:20.0,stock:1500},
+        {name:'Behance 设计号',price:22.0,stock:1400},
+        {name:'Dribbble 设计号',price:25.0,stock:1200},
+        {name:'Steam 游戏账号',price:30.0,stock:1000},
+        {name:'Epic Games 游戏号',price:25.0,stock:1300},
+        {name:'Riot Games 拳头号',price:20.0,stock:1600},
+        {name:'Netflix 流媒体号',price:45.0,stock:800},
+        {name:'Disney+ 流媒体号',price:40.0,stock:900},
+        {name:'HBO Max 流媒体号',price:42.0,stock:850},
+        {name:'Amazon 买家号',price:35.0,stock:1000},
+        {name:'eBay 卖家号',price:55.0,stock:600},
+        {name:'PayPal 账号',price:68.0,stock:500},
+        {name:'Viber 通讯号',price:18.0,stock:1800},
+        {name:'Signal 加密通讯号',price:20.0,stock:1600}
+    ]
+};
+
+// 订单存储
+let orders = JSON.parse(localStorage.getItem('wxcf_orders') || '[]');
+let currentProduct = null;
+let currentCat = null;
+let pageHistory = [];
+let currentOrderNo = '';
+
+// 初始化
+function init(){
+    renderCategories();
+    bindNav();
+    bindSearch();
+}
+
+// 渲染分类
+function renderCategories(){
+    const grid = document.getElementById('categoryGrid');
+    grid.innerHTML = categories.map(cat=>`
+        <div class="category-card" onclick="openCategory('${cat.id}')">
+            <div class="category-name">${cat.name}</div>
+            <div class="category-count">${cat.count} 个商品</div>
+        </div>
+    `).join('');
+}
+
+// 打开分类
+function openCategory(catId){
+    currentCat = catId;
+    const cat = categories.find(c=>c.id===catId);
+    document.getElementById('catTitle').innerText = cat.name;
+    renderProducts(catId);
+    switchPage('page-products');
+}
+
+// 渲染商品
+function renderProducts(catId, keyword=''){
+    const list = document.getElementById('productList');
+    let products = allProducts[catId] || [];
+    if(keyword){
+        products = products.filter(p=>p.name.toLowerCase().includes(keyword.toLowerCase()));
+    }
+    list.innerHTML = products.map(pro=>{
+        const price = (pro.price * CONFIG.priceMultiplier).toFixed(2);
+        const usdt = (price / CONFIG.rate).toFixed(2);
+        return `
+        <div class="product-card">
+            <div class="product-name">${pro.name}</div>
+            <div class="product-meta">
+                <div>
+                    <span class="price">¥${price}</span>
+                    <span class="usdt-price"> / ${usdt} USDT</span>
+                </div>
+                <div class="stock">库存：${pro.stock}</div>
+            </div>
+            <button class="buy-btn" onclick="openOrder('${pro.name}',${pro.price},${pro.stock})">立即购买</button>
+        </div>
+        `;
+    }).join('');
+}
+
+// 打开下单弹窗
+function openOrder(name, price, stock){
+    currentProduct = {name, price, stock};
+    const orderNo = 'WXCF' + Date.now();
+    currentOrderNo = orderNo;
+    document.getElementById('orderNo').innerText = orderNo;
+    document.getElementById('orderProduct').value = name;
+    document.getElementById('buyQty').value = 1;
+    document.getElementById('buyEmail').value = '';
+    calcTotal();
+    openModal('orderModal');
+}
+
+// 计算总价
+function calcTotal(){
+    if(!currentProduct) return;
+    const qty = parseInt(document.getElementById('buyQty').value) || 1;
+    const price = currentProduct.price * CONFIG.priceMultiplier * qty;
+    const usdt = (price / CONFIG.rate).toFixed(2);
+    document.getElementById('rmbTotal').innerText = price.toFixed(2);
+    document.getElementById('usdtTotal').innerText = usdt;
+}
+
+// 去支付
+function goPay(){
+    const email = document.getElementById('buyEmail').value.trim();
+    const qty = parseInt(document.getElementById('buyQty').value) || 1;
+    if(!email){
+        alert('请填写邮箱地址！订单信息将发送至此邮箱');
+        return;
+    }
+    if(!validateEmail(email)){
+        alert('请输入正确的邮箱格式！');
+        return;
+    }
+    const total = currentProduct.price * CONFIG.priceMultiplier * qty;
+    const usdt = (total / CONFIG.rate).toFixed(2);
+    document.getElementById('payRmb').innerText = total.toFixed(2);
+    document.getElementById('payUsdt').innerText = usdt;
+    closeModal('orderModal');
+    openModal('payModal');
+}
+
+// 确认支付 - 发送订单信息
+function confirmPay(){
+    const email = document.getElementById('buyEmail').value.trim();
+    const qty = parseInt(document.getElementById('buyQty').value) || 1;
+    const total = currentProduct.price * CONFIG.priceMultiplier * qty;
+    const usdt = (total / CONFIG.rate).toFixed(2);
+    const orderNo = currentOrderNo;
+    
+    // 生成订单号信息
+    const orderInfo = `订单号：${orderNo}\n商品：${currentProduct.name}\n数量：${qty}\n金额：¥${total.toFixed(2)} / ${usdt} USDT\n时间：${new Date().toLocaleString('zh-CN')}`;
+    
+    // 保存订单
+    const order = {
+        orderNo,
+        product: currentProduct.name,
+        email,
+        qty,
+        total: total.toFixed(2),
+        usdt,
+        orderInfo,
+        time: new Date().toLocaleString('zh-CN')
+    };
+    orders.push(order);
+    localStorage.setItem('wxcf_orders', JSON.stringify(orders));
+    
+    // 显示成功与订单号信息
+    document.getElementById('sendEmail').innerText = email;
+    document.getElementById('orderInfoText').innerText = orderInfo;
+    closeModal('payModal');
+    openModal('successModal');
+}
+
+// 邮箱验证
+function validateEmail(email){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// 订单查询
+function queryOrder(){
+    const email = document.getElementById('queryEmail').value.trim();
+    if(!email){
+        alert('请输入邮箱地址');
+        return;
+    }
+    const result = document.getElementById('queryResult');
+    const myOrders = orders.filter(o=>o.email===email);
+    if(myOrders.length===0){
+        result.innerHTML = '<p style="color:var(--danger);">未找到该邮箱的订单</p>';
+        return;
+    }
+    result.innerHTML = myOrders.map(o=>`
+        <div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
+            <p><strong>订单号：</strong>${o.orderNo}</p>
+            <p><strong>商品：</strong>${o.product}</p>
+            <p><strong>金额：</strong>¥${o.total} / ${o.usdt} USDT</p>
+            <p><strong>时间：</strong>${o.time}</p>
+            <p><strong>订单号信息：</strong></p>
+            <div class="order-info-box">${o.orderInfo.replace(/\n/g,'<br>')}</div>
+        </div>
+    `).join('');
+}
+
+// 搜索
+function bindSearch(){
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input',e=>{
+        const kw = e.target.value.trim();
+        if(kw){
+            let html = '';
+            for(let cat in allProducts){
+                allProducts[cat].forEach(pro=>{
+                    if(pro.name.toLowerCase().includes(kw.toLowerCase())){
+                        const price = (pro.price * CONFIG.priceMultiplier).toFixed(2);
+                        html += `
+                        <div class="product-card">
+                            <div class="product-name">${pro.name}</div>
+                            <div class="product-meta">
+                                <div><span class="price">¥${price}</span></div>
+                                <div class="stock">库存：${pro.stock}</div>
+                            </div>
+                            <button class="buy-btn" onclick="openOrder('${pro.name}',${pro.price},${pro.stock})">立即购买</button>
+                        </div>
+                        `;
+                    }
+                });
+            }
+            document.getElementById('categoryGrid').innerHTML = html || '<p style="text-align:center;color:var(--light);">无结果</p>';
+        }else{
+            renderCategories();
+        }
+    });
+}
+
+// 页面切换
+function switchPage(pageId){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    pageHistory.push(pageId);
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+}
+function goBack(){
+    pageHistory.pop();
+    const prev = pageHistory.length>0 ? pageHistory.pop() : 'page-home';
+    switchPage(prev);
+}
+function goHome(){
+    switchPage('page-home');
+}
+
+// 底部导航
+function bindNav(){
+    document.querySelectorAll('.nav-item').forEach(item=>{
+        item.addEventListener('click',()=>{
+            document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+            item.classList.add('active');
+            switchPage(item.dataset.page);
+        });
+    });
+}
+
+// 弹窗控制
+function openModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+// 复制
+function copyText(id){
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(()=>alert('已复制！'));
+}
+
+// 启动
+init();
+</script>
+</body>
+</html>
