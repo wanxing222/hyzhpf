@@ -16,6 +16,7 @@
             --danger:#F44336;
             --warning:#FF9800;
             --border:#E5E7EB;
+            --alipay:#1677FF;
         }
         body{background:var(--bg);color:var(--text);padding-bottom:70px;}
         a{text-decoration:none;color:inherit;}
@@ -57,10 +58,22 @@
         .success-box{text-align:center;padding:20px 0;}
         .success-icon{font-size:48px;color:var(--primary);margin-bottom:10px;}
         .order-info-box{background:#F5F5F5;padding:12px;border-radius:6px;margin-top:10px;word-break:break-all;}
-        .tip{font-size:12px;color:var(--light);margin-top:6px;}
+        .tip{font-size:12px;color:var(--light);margin-top:6px;line-height:1.6;}
         .link{color:var(--primary);text-decoration:underline;cursor:pointer;}
         .search-box{margin-bottom:15px;}
         .search-box input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;}
+        
+        /* 支付方式选择 */
+        .pay-method-box{display:flex;gap:10px;margin:15px 0;}
+        .pay-method-item{flex:1;padding:12px;border:2px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;font-size:15px;font-weight:bold;color:var(--light);transition:.2s;}
+        .pay-method-item.active{border-color:var(--alipay);background:#E6F4FF;color:var(--alipay);}
+        .pay-method-item.active.usdt{border-color:var(--primary);background:#E8F5E9;color:var(--primary);}
+        
+        /* 支付宝专用 */
+        .alipay-link-box{text-align:center;padding:15px 5px;}
+        .alipay-btn{display:inline-block;padding:12px 30px;background:var(--alipay);color:#fff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:bold;}
+        .pay-content{display:none;}
+        .pay-content.active{display:block;}
     </style>
 </head>
 <body>
@@ -161,22 +174,57 @@
 <div id="payModal" class="modal">
     <div class="modal-box">
         <div class="close-btn" onclick="closeModal('payModal')">✕ 关闭</div>
-        <div class="modal-title">USDT TRC20 支付</div>
-        <div class="pay-info">
-            <p><strong>应付金额：</strong><span id="payRmb">0</span> 元</p>
-            <p><strong>应付USDT：</strong><span id="payUsdt">0</span> USDT</p>
-            <p style="margin-top:10px;"><strong>收款地址（TRC20）：</strong></p>
-            <div style="display:flex;align-items:center;word-break:break-all;margin-top:5px;">
-                <span id="payAddress">TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK</span>
-                <button class="copy-btn" onclick="copyText('payAddress')">复制</button>
+        <div class="modal-title">💳 选择支付方式</div>
+        
+        <!-- 支付方式切换 -->
+        <div class="pay-method-box">
+            <div class="pay-method-item active" data-method="alipay" onclick="switchPayMethod('alipay')">
+                💰 支付宝
             </div>
-            <p style="font-size:12px;color:var(--danger);margin-top:10px;">⚠️ 请务必选择 TRC20 网络转账！转账后订单信息将自动发送到您的邮箱！</p>
+            <div class="pay-method-item usdt" data-method="usdt" onclick="switchPayMethod('usdt')">
+                💎 USDT
+            </div>
         </div>
-        <div class="form-group">
-            <label>上传支付截图（可选，加快到账）</label>
-            <input type="file" accept="image/*" id="payScreenshot">
+
+        <!-- 支付宝支付内容 -->
+        <div id="alipayContent" class="pay-content active">
+            <div class="pay-info">
+                <p><strong>应付金额：</strong><span id="payRmbAlipay">0</span> 元</p>
+                <p style="margin-top:10px;"><strong>📌 订单号：</strong><span id="payOrderNoAlipay"></span></p>
+            </div>
+            <div class="alipay-link-box">
+                <a href="https://qr.alipay.com/fkx16193ubdgzfllkobdo53" target="_blank" class="alipay-btn">
+                    📱 打开支付宝付款
+                </a>
+            </div>
+            <div class="tip" style="background:#E8F5E9;padding:12px;border-radius:8px;margin-top:10px;">
+                ⚠️ 注意事项：<br>
+                1. 点击上方按钮，打开支付宝扫码付款<br>
+                2. <strong>付款备注请填写订单号</strong>，方便快速核对发货<br>
+                3. 支付完成后点击下方"我已付款"按钮，订单信息将自动发送到您的邮箱<br>
+                4. 如未收到邮件请检查垃圾邮件，或联系客服：<a href="https://t.me/wxch03" target="_blank" class="link">@wxch03</a>
+            </div>
         </div>
-        <button class="buy-btn" onclick="confirmPay()">我已付款，发送订单信息到邮箱</button>
+
+        <!-- USDT支付内容 -->
+        <div id="usdtContent" class="pay-content">
+            <div class="pay-info">
+                <p><strong>应付金额：</strong><span id="payRmb">0</span> 元</p>
+                <p><strong>应付USDT：</strong><span id="payUsdt">0</span> USDT</p>
+                <p style="margin-top:10px;"><strong>收款地址（TRC20）：</strong></p>
+                <div style="display:flex;align-items:center;word-break:break-all;margin-top:5px;">
+                    <span id="payAddress">TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK</span>
+                    <button class="copy-btn" onclick="copyText('payAddress')">复制</button>
+                </div>
+                <p style="font-size:12px;color:var(--danger);margin-top:10px;">⚠️ 请务必选择 TRC20 网络转账！转错网络资产将无法找回！</p>
+            </div>
+            <div class="form-group">
+                <label>交易哈希/备注（可选，加快发货）</label>
+                <input type="text" id="txHash" placeholder="请输入交易哈希或备注">
+            </div>
+        </div>
+
+        <button class="buy-btn" style="margin-top:15px;" onclick="confirmPay()">✅ 我已付款</button>
     </div>
 </div>
 
@@ -188,10 +236,10 @@
             <div class="modal-title">付款成功！订单信息已发送</div>
             <p style="margin:10px 0;color:var(--primary);">订单信息已发送至：<span id="sendEmail"></span></p>
             <div class="order-info-box">
-                <p><strong>订单号信息：</strong></p>
+                <p><strong>订单信息：</strong></p>
                 <p id="orderInfoText"></p>
             </div>
-            <p class="tip">同时已发送到您的邮箱，请注意查收</p>
+            <p class="tip">📧 如未收到邮件请检查垃圾邮件，也可在首页"订单查询"输入邮箱重新查看</p>
             <button class="buy-btn" style="margin-top:15px;" onclick="closeModal('successModal');goHome();">确定</button>
         </div>
     </div>
@@ -209,6 +257,7 @@
 const CONFIG = {
     rate: 6.85,
     payAddress: 'TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK',
+    alipayUrl: 'https://qr.alipay.com/fkx16193ubdgzfllkobdo53',
     customerTG: 'https://t.me/wxch03',
     channelTG: 'https://t.me/wxcfpd',
     priceMultiplier: 3
@@ -235,7 +284,7 @@ const categories = [
 ];
 
 // ==========================================
-// 完整商品数据 — 一比一补全，无遗漏
+// 完整商品数据
 // ==========================================
 const allProducts = {
     fb: [
@@ -281,7 +330,7 @@ const allProducts = {
         {name:'Twitter/X 高权重',price:55.0,stock:400},
         {name:'Twitter/X 批量100个起',price:4.0,stock:15000}
     ],
-    tiktok: [
+    tiktok:[
         {name:'TikTok 美区账号',price:25.0,stock:2000},
         {name:'TikTok 英区账号',price:23.0,stock:1800},
         {name:'TikTok 日区账号',price:22.0,stock:2200},
@@ -469,6 +518,7 @@ let currentProduct = null;
 let currentCat = null;
 let pageHistory = [];
 let currentOrderNo = '';
+let currentPayMethod = 'alipay';
 
 // 初始化
 function init(){
@@ -560,10 +610,37 @@ function goPay(){
     }
     const total = currentProduct.price * CONFIG.priceMultiplier * qty;
     const usdt = (total / CONFIG.rate).toFixed(2);
+    
+    // 填充支付页面信息
+    document.getElementById('payRmbAlipay').innerText = total.toFixed(2);
+    document.getElementById('payOrderNoAlipay').innerText = currentOrderNo;
     document.getElementById('payRmb').innerText = total.toFixed(2);
     document.getElementById('payUsdt').innerText = usdt;
+    
+    // 默认选中支付宝
+    currentPayMethod = 'alipay';
+    document.querySelectorAll('.pay-method-item').forEach(el=>el.classList.remove('active'));
+    document.querySelector('.pay-method-item[data-method="alipay"]').classList.add('active');
+    document.getElementById('alipayContent').classList.add('active');
+    document.getElementById('usdtContent').classList.remove('active');
+    
     closeModal('orderModal');
     openModal('payModal');
+}
+
+// 切换支付方式
+function switchPayMethod(method){
+    currentPayMethod = method;
+    document.querySelectorAll('.pay-method-item').forEach(el=>el.classList.remove('active'));
+    document.querySelector(`.pay-method-item[data-method="${method}"]`).classList.add('active');
+    
+    if(method === 'alipay'){
+        document.getElementById('alipayContent').classList.add('active');
+        document.getElementById('usdtContent').classList.remove('active');
+    }else{
+        document.getElementById('alipayContent').classList.remove('active');
+        document.getElementById('usdtContent').classList.add('active');
+    }
 }
 
 // 确认支付 - 发送订单信息
@@ -573,9 +650,10 @@ function confirmPay(){
     const total = currentProduct.price * CONFIG.priceMultiplier * qty;
     const usdt = (total / CONFIG.rate).toFixed(2);
     const orderNo = currentOrderNo;
+    const payMethod = currentPayMethod === 'alipay' ? '支付宝' : 'USDT(TRC20)';
     
     // 生成订单号信息
-    const orderInfo = `订单号：${orderNo}\n商品：${currentProduct.name}\n数量：${qty}\n金额：¥${total.toFixed(2)} / ${usdt} USDT\n时间：${new Date().toLocaleString('zh-CN')}`;
+    const orderInfo = `订单号：${orderNo}\n商品：${currentProduct.name}\n数量：${qty}\n金额：¥${total.toFixed(2)} / ${usdt} USDT\n支付方式：${payMethod}\n时间：${new Date().toLocaleString('zh-CN')}`;
     
     // 保存订单
     const order = {
@@ -585,6 +663,7 @@ function confirmPay(){
         qty,
         total: total.toFixed(2),
         usdt,
+        payMethod,
         orderInfo,
         time: new Date().toLocaleString('zh-CN')
     };
@@ -621,10 +700,10 @@ function queryOrder(){
             <p><strong>订单号：</strong>${o.orderNo}</p>
             <p><strong>商品：</strong>${o.product}</p>
             <p><strong>金额：</strong>¥${o.total} / ${o.usdt} USDT</p>
+            <p><strong>支付方式：</strong>${o.payMethod}</p>
             <p><strong>时间：</strong>${o.time}</p>
-            <p><strong>订单号信息：</strong></p>
-            <div class="order-info-box">${o.orderInfo.replace(/\n/g,'<br>')}</div>
-        </div>
+            <p><strong>订单信息：</strong></p>
+                    </div>
     `).join('');
 }
 
