@@ -85,7 +85,7 @@
     </div>
     <div class="announce">
         📢 自动发货：付款后订单信息自动发送到您填写的邮箱，请正确填写邮箱地址！<br>
-        📞 客服：<a href="https://t.me/wxch03" target="_blank" class="link">https://t.me/wxch03</a> | 🔒 永久防失联：<a href="https://t.me/wxcfpd" target="_blank" class="link">https://t.me/wxcfpd</a>
+        📞 客服：<a href="https://t.me/wxch03" target="_blank" class="link">https://t.me/wxch03</a> | QQ客服：<a href="tencent://message/?uin=1655988714&Site=&Menu=yes" class="link">1655988714</a> | 🔒 永久防失联：<a href="https://t.me/wxcfpd" target="_blank" class="link">https://t.me/wxcfpd</a>
     </div>
     <div class="container">
         <div class="search-box">
@@ -117,6 +117,7 @@
             <div class="product-name">📞 在线客服</div>
             <div style="margin:15px 0;line-height:1.8;">
                 <p>🔹 Telegram：<a href="https://t.me/wxch03" target="_blank" class="link">https://t.me/wxch03</a></p>
+                <p>🔹 QQ客服：<a href="tencent://message/?uin=1655988714&Site=&Menu=yes" class="link">1655988714</a></p>
                 <p>🔹 永久防失联频道：<a href="https://t.me/wxcfpd" target="_blank" class="link">https://t.me/wxcfpd</a></p>
                 <p>🔹 服务时间：24小时在线</p>
                 <p>🔹 发货方式：付款后订单信息自动发送到您填写的邮箱</p>
@@ -201,8 +202,8 @@
                 ⚠️ 注意事项：<br>
                 1. 点击上方按钮，打开支付宝扫码付款<br>
                 2. <strong>付款备注请填写订单号</strong>，方便快速核对发货<br>
-                3. 支付完成后点击下方"我已付款"按钮，订单信息将自动发送到您的邮箱<br>
-                4. 如未收到邮件请检查垃圾邮件，或联系客服：<a href="https://t.me/wxch03" target="_blank" class="link">@wxch03</a>
+                3. 支付完成后点击下方"我已付款"按钮，后台核对支付信息后，账号信息将发送至您的邮箱<br>
+                4. 如未收到邮件请检查垃圾邮件，或联系客服：<a href="tencent://message/?uin=1655988714&Site=&Menu=yes" class="link">QQ:1655988714</a>
             </div>
         </div>
 
@@ -222,6 +223,12 @@
                 <label>交易哈希/备注（可选，加快发货）</label>
                 <input type="text" id="txHash" placeholder="请输入交易哈希或备注">
             </div>
+            <div class="tip" style="background:#E8F5E9;padding:12px;border-radius:8px;margin-top:10px;">
+                ⚠️ 注意事项：<br>
+                1. 请精确支付显示的金额，不要多转或少转<br>
+                2. 转账后点击下方"我已付款"按钮，后台核对支付信息后，账号信息将发送至您的邮箱<br>
+                3. 如超时未收到邮件请检查垃圾邮件，或联系客服：<a href="tencent://message/?uin=1655988714&Site=&Menu=yes" class="link">QQ:1655988714</a>
+            </div>
         </div>
 
         <button class="buy-btn" style="margin-top:15px;" onclick="confirmPay()">✅ 我已付款</button>
@@ -233,13 +240,13 @@
     <div class="modal-box">
         <div class="success-box">
             <div class="success-icon">✅</div>
-            <div class="modal-title">付款成功！订单信息已发送</div>
-            <p style="margin:10px 0;color:var(--primary);">订单信息已发送至：<span id="sendEmail"></span></p>
+            <div class="modal-title">提交成功！后台正在核对支付信息</div>
+            <p style="margin:10px 0;color:var(--primary);">核对通过后，账号信息将发送至：<span id="sendEmail"></span></p>
             <div class="order-info-box">
                 <p><strong>订单信息：</strong></p>
                 <p id="orderInfoText"></p>
             </div>
-            <p class="tip">📧 如未收到邮件请检查垃圾邮件，也可在首页"订单查询"输入邮箱重新查看</p>
+            <p class="tip">📧 如未收到邮件请检查垃圾邮件，也可在首页"订单查询"输入邮箱重新查看，或联系QQ客服：1655988714</p>
             <button class="buy-btn" style="margin-top:15px;" onclick="closeModal('successModal');goHome();">确定</button>
         </div>
     </div>
@@ -259,6 +266,7 @@ const CONFIG = {
     payAddress: 'TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK',
     alipayUrl: 'https://qr.alipay.com/fkx16193ubdgzfllkobdo53',
     customerTG: 'https://t.me/wxch03',
+    customerQQ: '1655988714',
     channelTG: 'https://t.me/wxcfpd',
     priceMultiplier: 3
 };
@@ -318,7 +326,8 @@ const allProducts = {
         {name:'Instagram 老号（2年+）',price:85.0,stock:250},
         {name:'Instagram 批量50个起',price:5.5,stock:8000}
     ],
-    twitter: [
+  
+twitter: [
         {name:'Twitter/X 全新号',price:4.5,stock:8000},
         {name:'Twitter/X 老号',price:18.0,stock:3000},
         {name:'Twitter/X 蓝V认证号',price:168.0,stock:50},
@@ -690,8 +699,7 @@ function queryOrder(){
         return;
     }
     const result = document.getElementById('queryResult');
-    const myOrders = orders.filter(o=>o.email===email);
-    if(myOrders.length===0){
+    const myOrders = orders.filter(o=>o.email===email);if(myOrders.length === 0){
         result.innerHTML = '<p style="color:var(--danger);">未找到该邮箱的订单</p>';
         return;
     }
@@ -702,8 +710,9 @@ function queryOrder(){
             <p><strong>金额：</strong>¥${o.total} / ${o.usdt} USDT</p>
             <p><strong>支付方式：</strong>${o.payMethod}</p>
             <p><strong>时间：</strong>${o.time}</p>
-            <p><strong>订单信息：</strong></p>
-                    </div>
+            <p><strong>订单详情：</strong></p>
+            <pre style="white-space:pre-wrap;font-size:12px;background:#f5f5f5;padding:8px;border-radius:4px;margin-top:5px;">${o.orderInfo}</pre>
+        </div>
     `).join('');
 }
 
@@ -718,11 +727,15 @@ function bindSearch(){
                 allProducts[cat].forEach(pro=>{
                     if(pro.name.toLowerCase().includes(kw.toLowerCase())){
                         const price = (pro.price * CONFIG.priceMultiplier).toFixed(2);
+                        const usdt = (price / CONFIG.rate).toFixed(2);
                         html += `
                         <div class="product-card">
                             <div class="product-name">${pro.name}</div>
                             <div class="product-meta">
-                                <div><span class="price">¥${price}</span></div>
+                                <div>
+                                    <span class="price">¥${price}</span>
+                                    <span class="usdt-price"> / ${usdt} USDT</span>
+                                </div>
                                 <div class="stock">库存：${pro.stock}</div>
                             </div>
                             <button class="buy-btn" onclick="openOrder('${pro.name}',${pro.price},${pro.stock})">立即购买</button>
@@ -731,7 +744,7 @@ function bindSearch(){
                     }
                 });
             }
-            document.getElementById('categoryGrid').innerHTML = html || '<p style="text-align:center;color:var(--light);">无结果</p>';
+            document.getElementById('categoryGrid').innerHTML = html || '<p style="text-align:center;color:var(--light);grid-column:1/-1;">无结果</p>';
         }else{
             renderCategories();
         }
@@ -744,13 +757,16 @@ function switchPage(pageId){
     document.getElementById(pageId).classList.add('active');
     pageHistory.push(pageId);
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+    if(navItem) navItem.classList.add('active');
 }
 function goBack(){
     pageHistory.pop();
-    const prev = pageHistory.length>0 ? pageHistory.pop() : 'page-home';
+    const prev = pageHistory.length > 0 ? pageHistory.pop() : 'page-home';
     switchPage(prev);
 }
 function goHome(){
+    pageHistory = ['page-home'];
     switchPage('page-home');
 }
 
@@ -760,6 +776,7 @@ function bindNav(){
         item.addEventListener('click',()=>{
             document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
             item.classList.add('active');
+            pageHistory = [item.dataset.page];
             switchPage(item.dataset.page);
         });
     });
@@ -772,7 +789,16 @@ function closeModal(id){document.getElementById(id).classList.remove('active');}
 // 复制
 function copyText(id){
     const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text).then(()=>alert('已复制！'));
+    navigator.clipboard.writeText(text).then(()=>alert('已复制！'))
+    .catch(()=>{
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('已复制！');
+    });
 }
 
 // 启动
